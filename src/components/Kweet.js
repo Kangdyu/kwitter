@@ -1,4 +1,4 @@
-import { dbService } from "firebaseConfig";
+import { dbService, storageService } from "firebaseConfig";
 import React, { useState } from "react";
 
 function Kweet({ kweetObj, isOwner }) {
@@ -9,8 +9,9 @@ function Kweet({ kweetObj, isOwner }) {
     const ok = window.confirm("Are you sure to delete this kweet?");
     if (ok) {
       await dbService.doc(`kweets/${kweetObj.id}`).delete();
-    } else {
-      return;
+      if (kweetObj.attachmentURL !== "") {
+        await storageService.refFromURL(kweetObj.attachmentURL).delete();
+      }
     }
   }
 
@@ -50,6 +51,14 @@ function Kweet({ kweetObj, isOwner }) {
       ) : (
         <>
           <h4>{kweetObj.text}</h4>
+          {kweetObj.attachmentURL && (
+            <img
+              src={kweetObj.attachmentURL}
+              width="50px"
+              height="50px"
+              alt="img"
+            />
+          )}
           {isOwner && (
             <>
               <button onClick={onDeleteClick}>Delete Nweet</button>

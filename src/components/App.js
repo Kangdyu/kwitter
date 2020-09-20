@@ -9,20 +9,38 @@ function App() {
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
       if (user) {
-        setUserObj(user);
+        setUserObj({
+          displayName: user.displayName,
+          uid: user.uid,
+          updateProfile: (args) => user.updateProfile(args),
+        });
+      } else {
+        setUserObj(null);
       }
       setInit(true);
     });
   }, []);
 
+  function refreshUser() {
+    const user = authService.currentUser;
+    setUserObj({
+      displayName: user.displayName,
+      uid: user.uid,
+      updateProfile: (args) => user.updateProfile(args),
+    });
+  }
+
   return (
     <>
       {init ? (
-        <MainRouter isLoggedIn={Boolean(userObj)} userObj={userObj} />
+        <MainRouter
+          isLoggedIn={Boolean(userObj)}
+          userObj={userObj}
+          refreshUser={refreshUser}
+        />
       ) : (
         "Loading..."
       )}
-      <footer>&copy; 2020 Kwitter</footer>
     </>
   );
 }

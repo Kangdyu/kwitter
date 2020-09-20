@@ -1,9 +1,9 @@
 import Kweet from "components/Kweet";
 import { dbService } from "firebaseConfig";
 import React, { useEffect, useState } from "react";
+import KweetFactory from "components/KweetFactory";
 
 function Home({ userObj }) {
-  const [kweet, setKweet] = useState("");
   const [kweets, setKweets] = useState([]);
 
   useEffect(() => {
@@ -16,36 +16,9 @@ function Home({ userObj }) {
     });
   }, []);
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    await dbService.collection("kweets").add({
-      text: kweet,
-      createdAt: Date.now(),
-      creatorId: userObj.uid,
-    });
-    setKweet("");
-  }
-
-  function onChange(event) {
-    const {
-      target: { value },
-    } = event;
-
-    setKweet(value);
-  }
-
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <input
-          value={kweet}
-          onChange={onChange}
-          type="text"
-          placeholder="What's on your mind?"
-          maxLength={120}
-        />
-        <input type="submit" value="Kweet" />
-      </form>
+      <KweetFactory userObj={userObj} />
       <div>
         {kweets.map((kweet) => (
           <Kweet
